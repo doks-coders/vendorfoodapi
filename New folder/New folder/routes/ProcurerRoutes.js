@@ -37,7 +37,7 @@ router.post("/cartheaders",upload,API.getCartHeaders)
 
 router.get("/items",API.getProcurerItems)
 router.delete("/items",API.deleteProcurerItems)
-router.post("/set-order",upload,API.setOrder)
+router.get("/accept-order/:id",API.acceptOrder)
 router.get("/order-delivered/:id",API.orderDelivered)
 router.post("/get-all-chatrooms",upload,API.getAllChatrooms)
 

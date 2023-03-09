@@ -169,17 +169,7 @@ static async getUserWithFirebaseid(req,res){
             const cartInitial = await Cart.find({ _id: { $in: array } })
             const cartItems = cartInitial.filter((val) => val['_doc'].orderSent == true)
             const userKeys = cartItems.map((val) => val.userId)
-            const items = cartItems.map((val) => ({ 
-                items: val.items, 
-                userId: val.userId, 
-                cartId: val._id, 
-                orderAccepted: val.orderAccepted,
-                orderDelivered:val.orderDelivered,
-                procurerId:val.procurerId,
-                chosenPaymentName:val.chosenPaymentName,
-                locationName:val.locationName,
-                locationCoordinates:val.locationCoordinates                
-            }))
+            const items = cartItems.map((val) => ({ items: val.items, userId: val.userId, cartId: val._id, orderAccepted: val.orderAccepted }))
             const userItemArray = await Users.find({ _id: { $in: userKeys } })
             const userItems = userItemArray.map((val) => {
                 const { name, image, _id, id } = val['_doc']
@@ -187,7 +177,7 @@ static async getUserWithFirebaseid(req,res){
                 let itemsArray = items.map((val) => val.userId)
 
                 let indexEL = itemsArray.findIndex((val) => val == _id)
-                const { cartId, procurerId,locationCoordinates, userId, orderAccepted,orderDelivered,locationName,chosenPaymentName } = items[indexEL]
+                const { cartId, procurerId, userId, orderAccepted } = items[indexEL]
 
                 return {
                     name, image, _id, id,
@@ -195,18 +185,13 @@ static async getUserWithFirebaseid(req,res){
                     cartId,
                     procurerId,
                     userId,
-                    orderAccepted,
-                    orderDelivered,
-                    locationName,
-                    chosenPaymentName,
-                    locationCoordinates
-
+                    orderAccepted
                 }
 
 
             })
 
-console.log({userItems})
+
             res.status(200).json(userItems)
         } catch (error) {
             res.status(404).json({ message: error.message })
@@ -279,22 +264,13 @@ console.log({userItems})
     }
 
 
-    static async setOrder(req, res) {
-        const {cartid,mode} = req.body
+    static async acceptOrder(req, res) {
         try {
-           if(mode =='accept'){
-            console.log({ cartid })
-            const result = await Cart.updateOne({ _id: cartid }, { $set: { orderAccepted: true } })
+            const cartId = req.params.id
+            console.log({ cartId })
+            const result = await Cart.updateOne({ _id: cartId }, { $set: { orderAccepted: true } })
             console.log({ result })
-            res.status(201).json({ message: 'Accepted Successfully' })
-           }
-           if(mode =='decline'){
-            console.log({ cartid })
-            const result = await Cart.updateOne({ _id: cartid }, { $set: { orderSent: false } })
-            console.log({ result })
-            res.status(201).json({ message: 'Declined Successfully' })
-           }
-        
+            res.status(201).json({ message: 'Updated Successfully' })
         } catch (error) {
             console.log(error)
             res.status(404).json({ message: error.message })
