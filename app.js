@@ -9,7 +9,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}));
 app.use(express.static("uploads"));
 
-mongoose.connect(process.env.DB_URI, {
+mongoose.connect(process.env.DB_VENDOR, {
     useNewUrlParser:true,
     useUnifiedTopology:true,
     useFindAndModify:true,
